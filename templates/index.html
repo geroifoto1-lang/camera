@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Видеокомната</title>
+</head>
+<body>
+<h2>Видеокомната</h2>
+<p>Камера включается только после твоего разрешения.</p>
+
+<button id="start">Включить камеру</button>
+<button id="stop" disabled>Остановить трансляцию</button>
+
+<p id="status">Камера выключена</p>
+<video id="preview" autoplay muted playsinline width="320"></video>
+
+<script>
+let stream;
+
+document.getElementById("start").onclick = async () => {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: false
+    });
+    document.getElementById("preview").srcObject = stream;
+    document.getElementById("status").textContent =
+      "Камера включена. Локальный просмотр.";
+    document.getElementById("start").disabled = true;
+    document.getElementById("stop").disabled = false;
+  } catch (error) {
+    document.getElementById("status").textContent =
+      "Доступ к камере не предоставлен.";
+  }
+};
+
+document.getElementById("stop").onclick = () => {
+  if (stream) stream.getTracks().forEach(track => track.stop());
+  document.getElementById("preview").srcObject = null;
+  document.getElementById("status").textContent = "Камера выключена";
+  document.getElementById("start").disabled = false;
+  document.getElementById("stop").disabled = true;
+};
+</script>
+</body>
+</html>
